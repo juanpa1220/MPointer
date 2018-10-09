@@ -5,11 +5,13 @@
 #ifndef MPOINTER_MPOINTERGC_H
 #define MPOINTER_MPOINTERGC_H
 
-#include "dataStructures/LinkedList.cpp"
+#include "dataStructures/LinkedList.h"
 
+template <class T>
 class MPointerGC {
-    static MPointerGC *instance;
-    LinkedList *linkedList;
+private:
+    static MPointerGC<T> *instance;
+    LinkedList<T> *linkedList;
 
     // Private constructor
     MPointerGC();
@@ -17,9 +19,12 @@ class MPointerGC {
 public:
     static MPointerGC *getInstance();
 
-    void test(int data);
+    uint64_t addMPointer(T *data);
 
-//    void update();
+    void reduceRef(uint64_t id);
+
+    void updateList();
+
 };
 
 #endif //MPOINTER_MPOINTERGC_H

@@ -11,8 +11,8 @@ template<class T>
 class MPointer {
 private:
     T *data;
-    int id;
-    MPointerGC *gcInstance;
+    uint64_t id;
+    MPointerGC<MPointer<T>> *gcInstance;
 public:
     // basic constructor
     MPointer();

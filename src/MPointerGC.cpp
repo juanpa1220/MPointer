@@ -5,25 +5,45 @@
 #include "MPointerGC.h"
 
 //Initialize pointer to 0, that it can be initialized in first call to getInstance
-MPointerGC *MPointerGC::instance = 0;
 
-MPointerGC::MPointerGC() {
-    linkedList = new LinkedList();
+template<class T>
+MPointerGC<T> *MPointerGC<T>::instance = 0;
+
+
+template<class T>
+MPointerGC<T>::MPointerGC() {
+    linkedList = new LinkedList<T>;
 }
 
-MPointerGC *MPointerGC::getInstance() {
+template<class T>
+MPointerGC<T> *MPointerGC<T>::getInstance() {
     if (!instance)
-        instance = new MPointerGC;
+        instance = new MPointerGC<T>;
     return instance;
 }
 
-void MPointerGC::test(int data) {
-    linkedList->createnode(data);
+template<class T>
+uint64_t MPointerGC<T>::addMPointer(T *data) {
+    auto id = reinterpret_cast<uint64_t>(data);
+    linkedList->insertarNodo(data, id);
+    linkedList->aumentarRef(id);
+
+    return id;
 }
 
-//void MPointerGC::update() {
-//
-//}
+template<class T>
+void MPointerGC<T>::reduceRef(uint64_t id) {
+    linkedList->disminuirRef(id);
+}
+
+template<class T>
+void MPointerGC<T>::updateList() {
+    for (int i = 0; i < linkedList->getLenght(); ++i) {
+        if (linkedList->getNodo(i).cantRef == 0) {
+            linkedList->eliminarNodo(i);
+        }
+    }
+}
 
 
 

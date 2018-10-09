@@ -8,8 +8,8 @@
 template<class T>
 MPointer<T>::MPointer() {
     data = (T *) malloc(sizeof(T));
-    gcInstance = MPointerGC::getInstance();
-    gcInstance->test(123);
+    gcInstance = MPointerGC<MPointer<T>>::getInstance();
+    id = gcInstance->addMPointer(this);
 }
 
 // New method call the constructor
@@ -30,7 +30,7 @@ T &MPointer<T>::operator*() {
 // = operator to not MPointers objects
 template<class T>
 T &MPointer<T>::operator=(const T &_data) {
-    if (typeid(*this->data).name() == typeid(_data).name()) {
+    if ((typeid(*this->data).name() == typeid(_data).name())) {
         *this->data = _data;
     }
     return *this->data;
@@ -55,5 +55,7 @@ T &MPointer<T>::operator&() {
 // destroyer implementation
 template<class T>
 void MPointer<T>::destroyer() {
-    free(*this);
+    gcInstance->reduceRef(this->id);
+    gcInstance->updateList();
+    free(this->data);
 }
