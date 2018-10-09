@@ -4,6 +4,7 @@
 
 #include <stringbuffer.h>
 #include <prettywriter.h>
+#include <string>
 #include "JSONMakerClient.h"
 
 /**

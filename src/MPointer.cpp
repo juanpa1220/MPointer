@@ -7,9 +7,16 @@
 // constructor implementation
 template<class T>
 MPointer<T>::MPointer() {
-    data = (T *) malloc(sizeof(T));
-    gcInstance = MPointerGC<MPointer<T>>::getInstance();
-    id = gcInstance->addMPointer(this);
+    if (MCliente::esActivo()) {
+        cliente = MCliente::getInstance();
+        rapidjson::Document doc = cliente->conectar(jsonMaker.solicitarMemoria(typeid(T).name()));
+        this->IDServer = doc["ID"].GetString();
+
+    } else {
+        data = (T *) malloc(sizeof(T));
+        gcInstance = MPointerGC<MPointer<T>>::getInstance();
+        id = gcInstance->addMPointer(this);
+    }
 }
 
 // New method call the constructor
@@ -29,26 +36,36 @@ T &MPointer<T>::operator*() {
 
 // = operator to not MPointers objects
 template<class T>
-T &MPointer<T>::operator=(const T &_data) {
-    if ((typeid(*this->data).name() == typeid(_data).name())) {
-        *this->data = _data;
+T MPointer<T>::operator=(const T &_data) {
+    if (MCliente::esActivo()) {
+        cliente->conectar(jsonMaker.solicitarAsignacion(IDServer, _data));
+        return _data;
     }
+    *this->data = _data;
     return *this->data;
 }
 
 // = operator to MPointers objects
 template<class T>
 MPointer<T> &MPointer<T>::operator=(const MPointer<T> &_pointer) {
-    if (typeid(this->data).name() == typeid(_pointer.data).name()) {
-        this->data = _pointer.data;
+    if (MCliente::esActivo()) {
+        this->IDServer = _pointer.IDServer;
     }
+    this->data = _pointer.data;
     return *this;
 }
 
 // & operator
 template<class T>
-T &MPointer<T>::operator&() {
-    return *this->data;
+T MPointer<T>::operator&() {
+    if (MCliente::esActivo()) {
+        rapidjson::Document doc = cliente->conectar(jsonMaker.solicitarValor(IDServer));
+        if (typeid(T).name() == typeid(int).name()) {
+            return doc["dato"].GetInt();
+        }
+    } else {
+        return *this->data;
+    }
 }
 // ..........................................
 
@@ -58,4 +75,9 @@ void MPointer<T>::destroyer() {
     gcInstance->reduceRef(this->id);
     gcInstance->updateList();
     free(this->data);
+}
+
+template<class T>
+void MPointer<T>::MPointer_init(std::string IP, int puerto) {
+    MCliente::getInstance(IP, puerto);
 }

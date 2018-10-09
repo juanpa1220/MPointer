@@ -119,5 +119,13 @@ int main() {
     bubbleSort.displayList();
 
 
+
+    // ............................... test server ............................... //
+
+    MPointer<std::string>::MPointer_init("192.168.43.173", 5555);
+    MPointer<int> mPointer18 = MPointer<int>::New();
+    mPointer18 = 4;
+    std::cout << "test::::: "<<&mPointer18 << std::endl;
+
     return 0;
 }

@@ -7,7 +7,7 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <iostream>
-#include <../../libraries/include/rapidjson/document.h>
+#include <document.h>
 #include "JSONMakerClient.h"
 
 /**

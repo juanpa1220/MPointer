@@ -1,7 +1,7 @@
 #ifndef MPOINTER_JSONMAKERCLIENT_H
 #define MPOINTER_JSONMAKERCLIENT_H
 
-#include <../../libraries/include/rapidjson/document.h>
+#include <document.h>
 
 /**
  * Realiza toda la administración del JSON para el cliente
